@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sistema de Gestión de Usuarios 🧑‍💻</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Deep Indigo Palette */
+      --primary-base: #4f46e5; /* Indigo-600 */
+      --primary-dark: #4338ca; /* Indigo-700 */
+      --primary-light: #eef2ff; /* Indigo-50 */
+      
+      /* Grayscale Palette */
+      --gray-0: #ffffff;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+
+      --success: #10b981; /* Emerald */
+      --danger: #ef4444; /* Red */
+      --warning: #f59e0b; /* Amber */
+      --info: #0ea5e9; /* Sky */
+
+      --bg-app: var(--gray-100);
+      --card-bg: var(--gray-0);
+      --border-color: var(--gray-200);
+      --text-color: var(--gray-700);
+      
+      --shadow-base: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    *{
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      margin: 0;
+      background: var(--bg-app);
+      padding: 32px 16px; /* Más padding en general */
+      color: var(--text-color);
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    header {
+      display: flex;
+      align-items: flex-end; /* Alineación al final */
+      justify-content: space-between;
+      padding: 0 4px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 32px;
+      margin: 0;
+      color: var(--gray-900);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    h2 {
+      font-size: 18px;
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: var(--gray-700);
+      font-weight: 700;
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 8px;
+    }
+    .card {
+      background: var(--card-bg);
+      padding: 24px 32px;
+      border-radius: 16px; /* Bordes más grandes */
+      box-shadow: var(--shadow-base);
+      border: 1px solid var(--border-color);
+      transition: all 0.3s;
+    }
+    .card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    label {
+      font-size: 13px;
+      color: var(--gray-500);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    input, select, textarea {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--gray-300);
+      font-size: 16px;
+      color: var(--gray-900);
+      background-color: white;
+      transition: all 0.2s ease-in-out;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: 3px solid var(--primary-light);
+      border-color: var(--primary-base);
+      box-shadow: 0 0 0 1px var(--primary-base);
+    }
+    textarea {
+        resize: vertical;
+        min-height: 90px;
+    }
+    
+    /* === Botones (Btns) === */
+    .btn {
+      padding: 10px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.2s ease-in-out;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: var(--shadow-base);
+    }
+    .btn-primary {
+      background: var(--primary-base);
+      color: white;
+      border: 1px solid var(--primary-dark);
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .btn-secondary {
+      background: var(--gray-100);
+      color: var(--gray-700);
+      border: 1px solid var(--gray-300);
+    }
+    .btn-secondary:hover {
+      background: var(--gray-200);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+      border: 1px solid #b91c1c; /* Darker red */
+    }
+    .btn-danger:hover {
+      background: #b91c1c;
+      transform: translateY(-2px);
+    }
+    
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .form-actions > .right-group {
+      margin-left: auto;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .toolbar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .toolbar input {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    /* === Tabla (Table) === */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: var(--shadow-base);
+    }
+    th, td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--gray-200);
+      text-align: left;
+    }
+    th {
+      background-color: var(--gray-100);
+      color: var(--gray-500);
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    tbody tr:hover {
+      background-color: var(--primary-light);
+      cursor: default;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    /* === Roles (Pills) === */
+    .pill {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .pill.usuario { background-color: var(--primary-light); color: var(--primary-dark); }
+    .pill.admin { background-color: #fee2e2; color: #b91c1c; } /* Light Red for Admin */
+    .pill.moderador { background-color: #ecfeff; color: #0891b2; } /* Light Cyan for Moderator */
+
+
+    .empty {
+      padding: 40px;
+      text-align: center;
+      color: var(--gray-500);
+      font-size: 17px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow-base);
+      border: 1px solid var(--border-color);
+    }
+    .small-text {
+      font-size: 14px;
+      color: var(--gray-500);
+    }
+    footer {
+      margin-top: 24px;
+      font-size: 14px;
+      color: var(--gray-500);
+      text-align: center;
+    }
+
+    /* Toast Notifications */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--gray-900);
+      color: white;
+      padding: 14px 24px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease-in-out;
+      z-index: 9999;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toast.show {
+      opacity: 0.95;
+      transform: translateY(0);
+    }
+
+    /* Editing row highlight */
+    tr.editing {
+      background: var(--primary-light);
+      outline: 2px solid var(--primary-base);
+    }
+    td.highlight {
+        background-color: #fffacdd3; /* Light yellow for search highlight */
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      h1 { font-size: 28px; }
+      .card { padding: 20px; border-radius: 12px; }
+      .container { gap: 16px; }
+      .form-actions, .form-actions > .right-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+      .form-actions > .right-group { margin-left: 0; }
+      .btn { width: 100%; }
+      .toolbar { flex-direction: column; gap: 10px; }
+      .toolbar input { min-width: 100%; }
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        font-size: 14px;
+      }
+      th, td { padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Sistema de Gestión de Usuarios 🧑‍💻</h1>
+      <div class="small-text">Almacenamiento Local (v3)</div>
+    </header>
+
+    <section class="card">
+      <h2>✍️ Formulario de Usuario</h2>
+      <form id="form">
+        <div class="form-group">
+          <label for="name">Nombre Completo</label>
+          <input id="name" name="name" type="text" placeholder="Ej: Juan Pérez" required title="El nombre es obligatorio" />
+        </div>
+        <div class="form-group">
+          <label for="email">Correo Electrónico</label>
+          <input id="email" name="email" type="email" placeholder="ejemplo@correo.com" required title="El email es obligatorio" />
+        </div>
+        <div class="form-group">
+          <label for="role">Rol en el Sistema</label>
+          <select id="role" name="role">
+            <option value="usuario">Usuario</option>
+            <option value="admin">Admin</option>
+            <option value="moderador">Moderador</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label for="notes">Notas Internas (Opcional)</label>
+          <textarea id="notes" name="notes" placeholder="Información relevante o historial..."></textarea>
+        </div>
+        
+        <div class="form-actions">
+          <input type="hidden" id="editingId" />
+          <button class="btn btn-primary" id="saveBtn" type="submit">💾 Guardar</button>
+          <button class="btn btn-secondary" id="clearBtn" type="button">🔄 Limpiar</button>
+          
+          <div class="right-group">
+            <button class="btn btn-secondary" id="exportBtn" type="button">📤 Exportar JSON</button>
+            <button class="btn btn-primary" id="importBtn" type="button">📥 Importar JSON</button>
+            <input id="fileInput" type="file" accept="application/json" style="display:none" />
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
+      <div class="toolbar">
+        <input id="search" placeholder="🔍 Buscar por nombre, email o rol..." type="text" />
+        <button class="btn btn-secondary" id="createSample">➕ Agregar Ejemplo</button>
+        <button class="btn btn-danger" id="clearAll">❌ Eliminar Todo</button>
+      </div>
+
+      <div id="listWrapper"></div>
+    </section>
+
+    <div id="toast" class="toast"></div>
+
+    <footer>
+      Sistema CRUD Interactivo. Desarrollado con Vanilla JS y diseño moderno.
+    </footer>
+  </div>
+
+  <script>
+    const LS_KEY = 'crud_usuarios_v3'; 
+    const VALID_ROLES = ['usuario', 'admin', 'moderador'];
+
+    const form = document.getElementById('form');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const roleInput = document.getElementById('role');
+    const notesInput = document.getElementById('notes');
+    const editingIdInput = document.getElementById('editingId');
+    const listWrapper = document.getElementById('listWrapper');
+    const searchInput = document.getElementById('search');
+    const clearBtn = document.getElementById('clearBtn');
+    const clearAllBtn = document.getElementById('clearAll');
+    const createSampleBtn = document.getElementById('createSample');
+    const exportBtn = document.getElementById('exportBtn');
+    const importBtn = document.getElementById('importBtn');
+    const fileInput = document.getElementById('fileInput');
+    const toastElement = document.getElementById('toast');
+    const saveBtn = document.getElementById('saveBtn'); 
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+
+    function showToast(msg,d=3000){
+      toastElement.textContent = msg;
+      toastElement.classList.add('show');
+      setTimeout(()=>{
+        toastElement.classList.remove('show');
+        toastElement.textContent = '';
+      }, d);
+    }
+
+    function readAll(){ try{ const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : []; }catch(e){console.error('Error al leer de localStorage:',e); return [];} }
+    function saveAll(arr){ localStorage.setItem(LS_KEY, JSON.stringify(arr)); }
+
+    function normalizeRole(role) {
+      return VALID_ROLES.includes(role) ? role : 'usuario';
+    }
+
+    function create(obj){
+      const normalizedObj = {...obj, role: normalizeRole(obj.role)};
+      const arr = readAll();
+      arr.unshift(normalizedObj);
+      saveAll(arr);
+      renderList();
+    }
+    function update(id, patch){
+      const normalizedPatch = {...patch, role: normalizeRole(patch.role)};
+      const arr = readAll().map(it => it.id===id?{...it,...normalizedPatch}:it);
+      saveAll(arr);
+      renderList();
+    }
+    function remove(id){ const arr = readAll().filter(it=>it.id!==id); saveAll(arr); renderList(); }
+
+    function resetForm(){
+      form.reset();
+      editingIdInput.value='';
+      document.querySelectorAll('tr').forEach(tr=>tr.classList.remove('editing'));
+      saveBtn.innerHTML = '💾 Guardar';
+      saveBtn.classList.remove('btn-secondary');
+      saveBtn.classList.add('btn-primary');
+    }
+
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m])); }
+
+    function highlightSearch(q){
+      if(!q) return;
+      document.querySelectorAll('#listWrapper td').forEach(td=>{
+        td.classList.remove('highlight');
+        // Solo buscar en las columnas de texto (no en acciones o píldoras de rol)
+        if(td.parentElement.cells[4] !== td && td.parentElement.cells[5] !== td && td.textContent.toLowerCase().includes(q.toLowerCase())) {
+          td.classList.add('highlight');
+        }
+      });
+    }
+
+    function startEdit(id){
+      const arr = readAll();
+      const found = arr.find(x=>x.id===id);
+      if(!found){ showToast('Registro no encontrado'); return; }
+      nameInput.value = found.name;
+      emailInput.value = found.email;
+      roleInput.value = found.role;
+      notesInput.value = found.notes||'';
+      editingIdInput.value = found.id;
+      nameInput.focus();
+
+      document.querySelectorAll('tr').forEach(tr=>tr.classList.remove('editing'));
+      const row = document.getElementById('row-'+id);
+      if(row) row.classList.add('editing');
+
+      saveBtn.innerHTML = '✅ Actualizar'; 
+      saveBtn.classList.remove('btn-primary');
+      saveBtn.classList.add('btn-secondary');
+    }
+
+    function getRolePillClass(role) {
+        return `pill ${role}`;
+    }
+
+    function renderList(){
+      const q = (searchInput.value||'').trim().toLowerCase();
+      const arr = readAll().filter(it => !q || (it.name+' '+it.email+' '+(it.role||'')).toLowerCase().includes(q));
+
+      if(arr.length===0){
+        listWrapper.innerHTML='<div class="empty">¡Vaya! Parece que no hay usuarios registrados. <br>¡Crea uno o importa datos para empezar!</div>';
+        return;
+      }
+      let html = '<table><thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Notas</th><th>Creado</th><th>Acciones</th></tr></thead><tbody>';
+      for(const it of arr){
+        const safeRole = normalizeRole(it.role);
+        html+=`<tr id="row-${it.id}">
+          <td>${escapeHtml(it.name)}</td>
+          <td>${escapeHtml(it.email)}</td>
+          <td><span class="${getRolePillClass(safeRole)}">${escapeHtml(safeRole)}</span></td>
+          <td>${escapeHtml(it.notes||'')}</td>
+          <td class="small-text">${new Date(it.createdAt).toLocaleString()}</td>
+          <td class="actions">
+            <button class="btn btn-secondary btn small" style="padding: 6px 12px; font-size: 13px;" data-action="edit" data-id="${it.id}">✏️ Editar</button>
+            <button class="btn btn-danger btn small" style="padding: 6px 12px; font-size: 13px;" data-action="delete" data-id="${it.id}">🗑️ Eliminar</button>
+          </td>
+        </tr>`;
+      }
+      html+='</tbody></table>';
+      listWrapper.innerHTML = html;
+
+      listWrapper.querySelectorAll('button[data-action]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const action = btn.getAttribute('data-action');
+          const id = btn.getAttribute('data-id');
+          if(action==='edit') startEdit(id);
+          if(action==='delete'){ if(confirm('¿Estás seguro de que quieres eliminar este registro?')){ remove(id); showToast('Registro eliminado.'); } }
+        });
+      });
+      highlightSearch(q);
+    }
+
+    form.addEventListener('submit', e=>{
+      e.preventDefault();
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
+      const role = roleInput.value;
+      const notes = escapeHtml(notesInput.value.trim());
+
+      if(!name||!email){ showToast('⚠️ Por favor, completa los campos de Nombre y Email.'); return; }
+
+      if (!EMAIL_REGEX.test(email)) {
+        showToast('❌ El email no tiene un formato válido.');
+        emailInput.focus();
+        return;
+      }
+      
+      const editingId = editingIdInput.value;
+      if(editingId){
+        update(editingId,{name,email,role,notes});
+        showToast('🎉 ¡Usuario actualizado exitosamente!');
+        resetForm();
+      }
+      else{
+        create({id:uid(),name,email,role,notes,createdAt:Date.now()});
+        showToast('➕ Nuevo usuario creado.');
+        resetForm();
+      }
+    });
+
+    clearBtn.addEventListener('click', resetForm);
+    clearAllBtn.addEventListener('click', ()=>{ if(confirm('⚠️ ¿Estás seguro de que quieres ELIMINAR TODOS los registros?')){ localStorage.removeItem(LS_KEY); renderList(); showToast('🗑️ Todos los registros han sido eliminados.'); } });
+    searchInput.addEventListener('input', renderList);
+    createSampleBtn.addEventListener('click', ()=>{
+        create({id:uid(),name:'Ana García',email:'ana.garcia@example.com',role:'usuario',notes:escapeHtml('Usuaria del área de marketing.'),createdAt:Date.now() - 86400000});
+        create({id:uid(),name:'Carlos Ruiz',email:'carlos.ruiz@example.com',role:'admin',notes:escapeHtml('Administrador principal.'),createdAt:Date.now() - 3600000});
+        create({id:uid(),name:'Elena Sanz',email:'elena.sanz@example.com',role:'moderador',notes:escapeHtml('Encargada de soporte.'),createdAt:Date.now()});
+        showToast('➕ Tres usuarios de ejemplo agregados.');
+    });
+    exportBtn.addEventListener('click', ()=>{
+      const data = readAll();
+      const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href=url; a.download='usuarios_exportados.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      showToast('📤 Exportación completada.');
+    });
+    importBtn.addEventListener('click', ()=>fileInput.click());
+    fileInput.addEventListener('change', async (ev)=>{
+      const f = ev.target.files && ev.target.files[0];
+      if(!f) return;
+      try{
+        const text = await f.text();
+        const parsed = JSON.parse(text);
+        if(!Array.isArray(parsed)){ showToast('❌ El archivo JSON no es válido.'); return; }
+
+        const normalized = parsed.map(it=>({
+          id: it.id||uid(),
+          name:it.name||'Nombre Desconocido',
+          email:it.email||'desconocido@ejemplo.com',
+          role: normalizeRole(it.role),
+          notes: escapeHtml(it.notes||''),
+          createdAt: it.createdAt||Date.now()
+        }));
+        saveAll(normalized);
+        renderList();
+        showToast(`📥 ¡${normalized.length} usuarios importados!`);
+      }catch(err){ console.error('Error al importar JSON:', err); showToast('❌ Hubo un error al importar el archivo JSON.'); } finally{ fileInput.value=''; }
+    });
+
+    renderList();
+  </script>
+</body>
+</html>
